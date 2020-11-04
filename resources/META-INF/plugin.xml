@@ -1,0 +1,32 @@
+<idea-plugin>
+    <id>com.qit.plugin.vest.id</id>
+    <name>Vest</name>
+    <version>1.0</version>
+    <vendor email="549685959@qq.com" url="http://www.tiandroid.com">Qit</vendor>
+
+    <description>马甲包生成插件，自动生成马甲包。类名、包名、目录名、资源等等</description>
+
+    <change-notes>修改类名、包名、目录名、资源</change-notes>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+    <idea-version since-build="173.0"/>
+    <depends>com.intellij.modules.platform</depends>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>com.intellij.modules.lang</depends>
+    -->
+<!--    <depends>org.jetbrains.kotlin</depends>-->
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
+
+    <actions>
+        <action id="Vest.VestPlugin" class="com.qit.plugin.vest.VestPlugin" text="vest" description="make a vest package">
+            <add-to-group group-id="BuildMenu" anchor="first"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="alt V"/>
+        </action>
+    </actions>
+
+</idea-plugin>
