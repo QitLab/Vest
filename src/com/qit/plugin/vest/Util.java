@@ -3,14 +3,10 @@ package com.qit.plugin.vest;
 import com.intellij.psi.*;
 import com.intellij.psi.search.FilenameIndex;
 import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.psi.util.PsiUtil;
 import com.intellij.refactoring.RefactoringFactory;
 import com.intellij.refactoring.RenameRefactoring;
 import com.qit.plugin.bean.RePackage;
 import com.qit.plugin.bean.VestTree;
-import org.jetbrains.kotlin.psi.KtPackageDirective;
-import repackage.Repackage;
 
 import java.io.File;
 
@@ -39,16 +35,22 @@ public class Util {
 
 
     public static void rename(PsiFile pisFile) {
-        JavaPsiFacade javaPsiFacade = JavaPsiFacade.getInstance(VestPlugin.project);
-        PsiClass psiClass = javaPsiFacade.findClass("", GlobalSearchScope.fileScope(pisFile));
-        String name = psiClass.getName();
-        if (name != null && name.length() > 2 && !"QQ".equals(name.substring(0, 2))) {
-            final RenameRefactoring refactoring =
-                    RefactoringFactory.getInstance(psiClass.getProject()).createRename(psiClass, "QQ" + name.substring(2));
-            refactoring.setSearchInComments(true);
-            refactoring.setPreviewUsages(false);
-            refactoring.setSearchInNonJavaFiles(true);
-            refactoring.run();
+        PsiElement[] psiElements = pisFile.getChildren();
+        for (PsiElement psiElement : psiElements) {
+            PsiNamedElement element;
+            if (psiElement.toString().equals("CLASS")
+                    || psiElement.toString().contains("PsiClass:")) {
+                element = (PsiNamedElement) psiElement.getOriginalElement();
+                String name = element.getName();
+                if (name != null && name.length() > 2 && !"QQ".equals(name.substring(0, 2))) {
+                    final RenameRefactoring refactoring =
+                            RefactoringFactory.getInstance(VestPlugin.project).createRename(element, "QQ" + name.substring(2));
+                    refactoring.setSearchInComments(true);
+                    refactoring.setPreviewUsages(false);
+                    refactoring.setSearchInNonJavaFiles(true);
+                    refactoring.run();
+                }
+            }
         }
     }
 
@@ -75,7 +77,7 @@ public class Util {
     }
 
     public static void renamePackage(PsiElement element, RePackage rePackage) {
-        PsiPackageStatement aaa=  (PsiPackageStatement)element;
+        PsiPackageStatement aaa = (PsiPackageStatement) element;
 //        PsiPackage = element
 //        PsiNamedElement
         if (aaa.getPackageName().contains(rePackage.getOldPackage())) {

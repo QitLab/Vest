@@ -1,29 +1,15 @@
 package com.qit.plugin.ui;
 
-import com.intellij.notification.Notification;
-import com.intellij.notification.NotificationDisplayType;
-import com.intellij.notification.NotificationGroup;
-import com.intellij.notification.Notifications;
-import com.intellij.openapi.ui.MessageType;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.psi.*;
-import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.refactoring.RefactoringFactory;
-import com.intellij.refactoring.RenameRefactoring;
+import com.intellij.psi.PsiFile;
 import com.qit.plugin.bean.ModuleList;
 import com.qit.plugin.bean.PathListModule;
 import com.qit.plugin.bean.RePackage;
 import com.qit.plugin.bean.VestTree;
 import com.qit.plugin.vest.Util;
-import com.qit.plugin.vest.VestPlugin;
-import org.jetbrains.kotlin.psi.KtClass;
-import org.jetbrains.kotlin.psi.KtFile;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
