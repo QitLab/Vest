@@ -102,7 +102,8 @@ public class VestGui extends JFrame {
                 if (mListModule.isSelectedIndex(i)) {
                     List<PsiFile> fs = mVestTreeList.get(i).getFile();
                     for (PsiFile psiFile : fs) {
-                        Util.rename(psiFile);
+                        Util.renamePackage(psiFile,rePackages.get(0));
+//                        Util.rename(psiFile);
 //                        psiFile.accept(new PsiRecursiveElementWalkingVisitor() {
 //                            @Override
 //                            public void visitElement(PsiElement element) {

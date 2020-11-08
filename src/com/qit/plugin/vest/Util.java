@@ -1,5 +1,7 @@
 package com.qit.plugin.vest;
 
+import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.psi.search.FilenameIndex;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -54,40 +56,38 @@ public class Util {
         }
     }
 
-    public static void renamePackage(PsiPackage psiPackage, String oldName, String newName) {
-        String[] newNames = newName.split("\\.");
-        String[] oldNames = oldName.split("\\.");
-        boolean isStart = false;
-        for (int i = newNames.length - 1; i >= 0; i--) {
-            String name = ((PsiNamedElement) psiPackage).getName();
-            if (name.equals(oldNames[i])) {
-                if (!oldNames[i].equals(newNames[i])) {
-                    isStart = true;
-                    final RenameRefactoring refactoring = RefactoringFactory.getInstance(VestPlugin.project).createRename(psiPackage, newNames[i]);
-                    refactoring.setSearchInComments(true);
-                    refactoring.setSearchInNonJavaFiles(true);
-                    refactoring.setPreviewUsages(false);
-                    refactoring.run();
+    //java版成功了
+    public static void renamePackage(PsiFile psiFile, RePackage rePackage) {
+        PsiElement[] psiElements = psiFile.getChildren();
+        for (PsiElement psiElement : psiElements) {
+            PsiNamedElement element;
+            if (//psiElement.toString().equals("PACKAGE_DIRECTIVE")||
+                    psiElement.toString().contains("PsiPackageStatement:")) {
+                PsiPackageStatement psiPackageStatement = (PsiPackageStatement) psiElement;
+                PsiPackage psiPackage = (PsiPackage) psiPackageStatement.getPackageReference().resolve();
+                String[] newNames = psiPackageStatement.getPackageName().replace(rePackage.getOldPackage(), rePackage.getNewPackage()).split("\\.");
+                String[] oldNames = psiPackageStatement.getPackageName().split("\\.");
+                boolean isStart = false;
+                for (int i = newNames.length - 1; i >= 0; i--) {
+                    String name = psiPackage.getName();
+                    if (name.equals(oldNames[i])) {
+                        if (!oldNames[i].equals(newNames[i])) {
+                            isStart = true;
+                            final RenameRefactoring refactoring = RefactoringFactory.getInstance(psiFile.getProject()).createRename(psiPackage.getOriginalElement(), newNames[i]);
+                            refactoring.setSearchInComments(false);
+                            refactoring.setSearchInNonJavaFiles(false);
+                            refactoring.setPreviewUsages(false);
+                            refactoring.respectAllAutomaticRenames();
+                            refactoring.respectEnabledAutomaticRenames();
+                            refactoring.run();
+                        }
+                    } else if (isStart) {
+                        return;
+                    }
                     if (i != 0) psiPackage = psiPackage.getParentPackage();
                 }
-            } else if (isStart) {
-                return;
             }
+
         }
     }
-
-    public static void renamePackage(PsiElement element, RePackage rePackage) {
-        PsiPackageStatement aaa = (PsiPackageStatement) element;
-//        PsiPackage = element
-//        PsiNamedElement
-        if (aaa.getPackageName().contains(rePackage.getOldPackage())) {
-            final RenameRefactoring refactoring = RefactoringFactory.getInstance(VestPlugin.project).createRename(aaa.getNavigationElement(), aaa.getPackageName().replace(rePackage.getOldPackage(), rePackage.getNewPackage()));
-            refactoring.setSearchInComments(true);
-            refactoring.setPreviewUsages(false);
-            refactoring.setSearchInNonJavaFiles(true);
-            refactoring.run();
-        }
-
-    }
-
 }
