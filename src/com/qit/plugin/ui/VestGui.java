@@ -1,6 +1,7 @@
 package com.qit.plugin.ui;
 
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.xml.XmlAttributeValue;
 import com.qit.plugin.bean.ModuleList;
 import com.qit.plugin.bean.PathListModule;
 import com.qit.plugin.bean.RePackage;
@@ -11,7 +12,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class VestGui extends JFrame {
 
@@ -47,12 +47,14 @@ public class VestGui extends JFrame {
      */
     public VestGui(List<VestTree> vestTreeList) {
         mVestTreeList = vestTreeList;
+
         frame = new JFrame("马甲包生成");
         frame.setSize(565, 576);
         frame.setLocationRelativeTo(null);
         frame.setContentPane(mPanel);
         frame.setVisible(true);
         initModuleList();
+        initFilesName();
         initPathList();
         confirmEvent();
     }
@@ -79,15 +81,25 @@ public class VestGui extends JFrame {
             mListModule.setSelectedIndex(i);
         }
     }
+    private void initFilesName() {
+        rePackages.clear();
+        for (int i = 0; i < mVestTreeList.size(); i++) {
+            if (mListModule.isSelectedIndex(i)) {
+                XmlAttributeValue packageElement = mVestTreeList.get(i).getPackageElement();
+                rePackages.add(new RePackage(packageElement.getValue()));
+            }
+        }
+        mTable.setModel(new PathListModule(rePackages));
+        mTable.setPreferredScrollableViewportSize(new Dimension(550, 200));// 表格的显示尺寸
+        mScrollPanePath.setViewportView(mTable);
+    }
 
     private void initPathList() {
         rePackages.clear();
         for (int i = 0; i < mVestTreeList.size(); i++) {
             if (mListModule.isSelectedIndex(i)) {
-                Set<String> packagePathSet = mVestTreeList.get(i).getPackagePath();
-                for (String str : packagePathSet) {
-                    rePackages.add(new RePackage(str));
-                }
+                XmlAttributeValue packageElement = mVestTreeList.get(i).getPackageElement();
+                rePackages.add(new RePackage(packageElement.getValue()));
             }
         }
         mTable.setModel(new PathListModule(rePackages));
@@ -100,46 +112,12 @@ public class VestGui extends JFrame {
         mBtnConfirm.addActionListener(e -> {
             for (int i = 0; i < mVestTreeList.size(); i++) {
                 if (mListModule.isSelectedIndex(i)) {
-                    List<PsiFile> fs = mVestTreeList.get(i).getFile();
-                    for (PsiFile psiFile : fs) {
-                        Util.renamePackage(psiFile,rePackages.get(0));
+                    List<PsiFile> fs = mVestTreeList.get(i).getClassFile();
+//                    Util.renamePackage(fs.get(0), rePackages.get(0));
+                    Util.renameManiPackage(mVestTreeList.get(i).getPackageElement(), rePackages.get(0));
+//                    for (PsiFile psiFile : fs) {
 //                        Util.rename(psiFile);
-//                        psiFile.accept(new PsiRecursiveElementWalkingVisitor() {
-//                            @Override
-//                            public void visitElement(PsiElement element) {
-//                                super.visitElement(element);
-////                                if (element.getFirstChild().getText().equals("package")) {
-////                                    PsiPackageStatement psiPackageStatement = (PsiPackageStatement) element;
-////                                    rePackages.forEach(rePackage ->
-////                                            Util.renamePackage(psiPackageStatement, rePackage));
-////                                }
-//                                if (element instanceof PsiPackage) {
-//                                   String a =  element.getText();
-//                                } else if (element instanceof PsiPackage) {
-//                                    String a =  element.getText();
-//                                }
-////                                if (element.toString().equals("CLASS")) {
-////                                }
-//                            }
-//                        });
-
-//
-////                        if (f.toString().equals("CLASS")) {
-////                            PsiFile[] psiFile = FilenameIndex.getFilesByName(VestPlugin.project, f.getName(), GlobalSearchScope.allScope(VestPlugin.project));
-//                        PsiFile psiFile = f.getContainingFile();
-//                        PsiElement[] psi = psiFile.getChildren();
-//                        for (PsiElement psiElement : psi) {
-//                            if (psiElement.toString().equals("PACKAGE_DIRECTIVE")) {
-////                                String name = ((PsiNamedElement) psiElement).getName();
-//                                final RenameRefactoring refactoring = RefactoringFactory.getInstance(VestPlugin.project).createRename(psiElement, "com.qit.grabs");
-//                                refactoring.setSearchInComments(true);
-//                                refactoring.setPreviewUsages(false);
-//                                refactoring.setSearchInNonJavaFiles(true);
-//                                refactoring.run();
-//                                return;
-//                            }
-//                        }
-                    }
+//                    }
                     frame.setVisible(false);
                 }
             }

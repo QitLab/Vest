@@ -25,7 +25,7 @@ public class VestPlugin extends AnAction {
         List<VestTree> vestTreeList = new ArrayList<>();
         for (int i = 1; i < modules.length; i++) {
             String moduleName = modules[i].getName().substring(modules[i].getName().indexOf('.') + 1);
-            String modulePath = project.getBasePath() + "/" + moduleName + "/src/main/java/";
+            String modulePath = project.getBasePath() + "/" + moduleName + "/src/main/";
             VestTree vestTree = Util.loopFiles(new File(modulePath), "", new VestTree(modules[i]), 0);
             vestTreeList.add(vestTree);
         }
